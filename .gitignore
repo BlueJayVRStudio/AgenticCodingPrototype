@@ -1,0 +1,14 @@
+.DS_Store
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+/backup/
+/llama-3.1-8b-instruct/
+
+/[Vv]env/
+
+/my_docs/
+/vector_db/
