@@ -36,6 +36,11 @@ class SingleAgent():
             show_progress=True
         )
         self.docs = self.loader.load()
+        if not self.docs:
+            file_path = os.path.join(self.root_dir, "dummy.txt")
+            with open(file_path, "w") as f:
+                f.write("hello world!")
+            self.docs = self.loader.load()
 
         # Split into chunks
         self.splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
