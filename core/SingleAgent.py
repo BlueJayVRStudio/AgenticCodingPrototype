@@ -43,24 +43,40 @@ class SingleAgent():
             self.docs = self.loader.load()
 
         # Split into chunks
-        self.splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        self.splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=200)
         self.chunks = self.splitter.split_documents(self.docs)
         # Store with embeddings
         self.embeddings = OllamaEmbeddings(model="nomic-embed-text")
         # Initialize DB
         self.db = Chroma.from_documents(self.chunks, embedding=self.embeddings, persist_directory="./vector_db")
-        self.llm = ChatOllama(model="llama3.1:8b-instruct-q4_K_M")
-        self.retriever = self.db.as_retriever(search_kwargs={"k": 10})
-        self.qa = RetrievalQA.from_chain_type(llm=self.llm, retriever=self.retriever, return_source_documents=True)
+        self.retriever = self.db.as_retriever(search_kwargs={"k": 3})
+        
+        # self.llm = ChatOllama(model="llama3.1:8b-instruct-q4_K_M")
+        self.llm = ChatOpenAI(
+            model="llama3.1:8b-instruct-q4_K_M",
+            openai_api_base="http://localhost:11434/v1",
+            openai_api_key="ollama"
+        )
         self.client = OpenAI(
             base_url="http://localhost:11434/v1",
             api_key="ollama"  # dummy key
         )
-        # Initialize with Fireworks parameters
+
+        # # Initialize with Fireworks parameters
+        # self.llm = ChatOpenAI(
+        #     model="accounts/fireworks/models/llama-v3p1-8b-instruct",
+        #     openai_api_base="https://api.fireworks.ai/inference/v1",
+        #     openai_api_key=FW_TOKEN,
+        # )
+
+        # # Initialize with Fireworks parameters
         # self.client = OpenAI(
         #     base_url="https://api.fireworks.ai/inference/v1",
         #     api_key=FW_TOKEN,
         # )
+        
+        self.qa = RetrievalQA.from_chain_type(llm=self.llm, retriever=self.retriever, return_source_documents=True)
+        
 
         self.tools = [
             self.get_weather, 
