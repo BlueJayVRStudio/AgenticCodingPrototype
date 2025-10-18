@@ -25,6 +25,10 @@ from langchain_community.document_loaders import (
     DirectoryLoader, TextLoader, PyPDFLoader, UnstructuredWordDocumentLoader
 )
 
+class DummyLoader:
+    def lazy_load(self):
+        return []
+    
 class SingleAgent():
     def __init__(self):
         self.root_dir = "./my_docs"
@@ -53,7 +57,8 @@ class SingleAgent():
         
         # self.llm = ChatOllama(model="llama3.1:8b-instruct-q4_K_M")
         self.llm = ChatOpenAI(
-            model="llama3.1:8b-instruct-q4_K_M",
+            # model="llama3.1:8b-instruct-q4_K_M",
+            model="qwen3:8b",
             openai_api_base="http://localhost:11434/v1",
             openai_api_key="ollama"
         )
@@ -108,14 +113,42 @@ class SingleAgent():
             """},
         ]
 
+    def is_binary(self, file_path):
+        """
+        Checks if a file contains binary data by examining the first 1024 bytes.
+        Returns True if the file is likely binary, False otherwise.
+        """
+        try:
+            with open(file_path, 'rb') as f:
+                chunk = f.read(1024)
+                return any(byte >= 128 for byte in chunk)
+        except Exception:
+            return True  # Handle any unexpected errors by treating as binary
+
     def custom_loader(self, path):
+        """
+        Loads a file based on its extension, skipping binary files.
+        """
         ext = os.path.splitext(path)[1].lower()
+
+        if self.is_binary(path):
+            return DummyLoader()  # Skip binary files
+
         if ext == ".pdf":
             return PyPDFLoader(path)
         elif ext in [".docx", ".doc"]:
             return UnstructuredWordDocumentLoader(path)
         else:
             return TextLoader(path, encoding="utf-8")
+    
+    # def custom_loader(self, path):
+    #     ext = os.path.splitext(path)[1].lower()
+    #     if ext == ".pdf":
+    #         return PyPDFLoader(path)
+    #     elif ext in [".docx", ".doc"]:
+    #         return UnstructuredWordDocumentLoader(path)
+    #     else:
+    #         return TextLoader(path, encoding="utf-8")
 
     def create_directory(self, relative_path):
         """
@@ -214,7 +247,18 @@ class SingleAgent():
             filename (string): The file path of the content to modify (e.g., 'dir0/dir1/script.py').
         """
         content = self.read_file(filename)
-        result = self.generate(f"This is the content to modify, please only return its modified version: {content}")
+        result = self.generate(f"""
+        The following is the content to modify, please modify according the most recent request: 
+                               
+        {content}
+
+        END OF CONTENT. Please ensure that if the content is a code that it is not wrapped in quotes 
+        or any other extraneous texts that are not part of the script. Similarly detect extraneous
+        details for other types of documents and exlude from the output.
+
+        This is a final reminder that you should only output the content, not any of your commentaries.
+        """) # this falls under 'user' query
+
         # print(f"modified content: {result}")
 
         if not filename:
@@ -248,6 +292,7 @@ class SingleAgent():
             # model="accounts/fireworks/models/llama-v3p1-8b-instruct",
             model="llama3.1:8b-instruct-q4_K_M",
             # model="qwen3:8b",
+            # model="gemma3:1b",
             messages=self.generative_message_base + self.messages,
             temperature=0.0,
             max_tokens=1024,
@@ -262,8 +307,8 @@ class SingleAgent():
 
         resp = self.client.chat.completions.create(
             # model="accounts/fireworks/models/llama-v3p1-8b-instruct",
-            model="llama3.1:8b-instruct-q4_K_M",
-            # model="qwen3:8b",
+            # model="llama3.1:8b-instruct-q4_K_M",
+            model="qwen3:8b",
             messages=self.instruct_message_base + self.messages,
             temperature=0.0,
             max_tokens=1024,
