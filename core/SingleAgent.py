@@ -57,8 +57,8 @@ class SingleAgent():
         
         # self.llm = ChatOllama(model="llama3.1:8b-instruct-q4_K_M")
         self.llm = ChatOpenAI(
-            # model="llama3.1:8b-instruct-q4_K_M",
-            model="qwen3:8b",
+            model="llama3.1:8b-instruct-q4_K_M",
+            # model="qwen3:8b",
             openai_api_base="http://localhost:11434/v1",
             openai_api_key="ollama"
         )
@@ -307,8 +307,8 @@ class SingleAgent():
 
         resp = self.client.chat.completions.create(
             # model="accounts/fireworks/models/llama-v3p1-8b-instruct",
-            # model="llama3.1:8b-instruct-q4_K_M",
-            model="qwen3:8b",
+            model="llama3.1:8b-instruct-q4_K_M",
+            # model="qwen3:8b",
             messages=self.instruct_message_base + self.messages,
             temperature=0.0,
             max_tokens=1024,
