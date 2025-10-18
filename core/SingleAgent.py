@@ -62,7 +62,15 @@ class SingleAgent():
         #     api_key=FW_TOKEN,
         # )
 
-        self.tools = [self.get_weather, self.save_code_output, self.modify_document, self.email_categorizer, self.add_nums, self.query_rag]
+        self.tools = [
+            self.get_weather, 
+            self.create_directory,
+            self.save_code_output, 
+            self.modify_document, 
+            self.email_categorizer, 
+            self.add_nums, 
+            self.query_rag
+        ]
         self.func_descriptions, self.func_lookup = build_tools_from_functions(self.tools)
 
         self.messages=[]
@@ -93,6 +101,18 @@ class SingleAgent():
         else:
             return TextLoader(path, encoding="utf-8")
 
+    def create_directory(self, relative_path):
+        """
+        Create target directory
+        
+        Arguments:
+            relative_path (string): Relative path to the target directory.
+        """
+
+        dir_path = os.path.join(self.root_dir, relative_path)
+        if not os.path.exists(dir_path):
+            os.makedirs(dir_path)
+            
     def save_code_output(self, code: str, filename: str) -> str:
         """
         Save generated code or document to a file path on disk.
@@ -200,13 +220,13 @@ class SingleAgent():
         return filename
     
     def generate_assistant(self, content):
-        return json.dumps({"role": "assistant", "content": content})
+        return {"role": "assistant", "content": content}
 
     def generate_query(self, content):
-        return json.dumps({"role": "user", "content": content})
+        return {"role": "user", "content": content}
 
     def generate(self, user_query):
-        self.messages.append(json.loads(self.generate_query(user_query)))
+        self.messages.append(self.generate_query(user_query))
 
         resp = self.client.chat.completions.create(
             # model="accounts/fireworks/models/llama-v3p1-8b-instruct",
@@ -218,11 +238,11 @@ class SingleAgent():
         )
 
         content = resp.choices[0].message.content
-        self.messages.append(json_repair.loads(self.generate_assistant(content)))
+        self.messages.append(self.generate_assistant(content))
         return content
     
     def run(self, user_query):
-        self.messages.append(json.loads(self.generate_query(user_query)))
+        self.messages.append(self.generate_query(user_query))
 
         resp = self.client.chat.completions.create(
             # model="accounts/fireworks/models/llama-v3p1-8b-instruct",
@@ -233,7 +253,7 @@ class SingleAgent():
             max_tokens=1024,
         )
 
-        self.messages.append(json_repair.loads(self.generate_assistant(resp.choices[0].message.content)))
+        self.messages.append(self.generate_assistant(resp.choices[0].message.content))
         # print(self.messages)
 
         try:
