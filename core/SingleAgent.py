@@ -50,6 +50,7 @@ class SingleAgent():
         self.splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=200)
         self.chunks = self.splitter.split_documents(self.docs)
         # Store with embeddings
+        # self.embeddings = OllamaEmbeddings(model="mxbai-embed-large")
         self.embeddings = OllamaEmbeddings(model="nomic-embed-text")
         # Initialize DB
         self.db = Chroma.from_documents(self.chunks, embedding=self.embeddings, persist_directory="./vector_db")
@@ -117,26 +118,29 @@ class SingleAgent():
             """},
         ]
 
-    def is_binary(self, file_path):
-        """
-        Checks if a file contains binary data by examining the first 1024 bytes.
-        Returns True if the file is likely binary, False otherwise.
-        """
+    def is_binary(self, path):
+        with open(path, 'rb') as f:
+            chunk = f.read(4096)
         try:
-            with open(file_path, 'rb') as f:
-                chunk = f.read(1024)
-                return any(byte >= 128 for byte in chunk)
-        except Exception:
-            return True  # Handle any unexpected errors by treating as binary
+            chunk.decode('utf-8')
+            return False   # decodes fine -> text
+        except UnicodeDecodeError:
+            return True    # invalid UTF-8 -> probably binary
+
 
     def custom_loader(self, path):
         """
         Loads a file based on its extension, skipping binary files.
         """
+        # print(path)
+
         ext = os.path.splitext(path)[1].lower()
 
         if self.is_binary(path):
+            print(path, " is binary")
             return DummyLoader()  # Skip binary files
+        else:
+            print(path, " is not binary")
 
         if ext == ".pdf":
             return PyPDFLoader(path)
