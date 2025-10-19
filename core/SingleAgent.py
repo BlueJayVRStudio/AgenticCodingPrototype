@@ -86,7 +86,7 @@ class SingleAgent():
         self.tools = [
             self.get_weather, 
             self.create_directory,
-            self.save_code_output, 
+            # self.save_code_output, 
             self.modify_document, 
             self.email_categorizer, 
             self.add_nums, 
@@ -101,8 +101,12 @@ class SingleAgent():
             
             You can use the following tools:
             {self.func_descriptions}
-            Respond only in JSON like: {{"tool": "tool_name", "arguments": {{...}}}}.
-            Finally, if the user insists on conversing, simply return a plaintext response to the user in a friendly manner
+            Respond only in JSON like: {{"tool": "tool_name", "arguments": {{...}}}}, even
+            if the user is asking for generative content. This is because your job is to
+            route the request to proper tools. Please follow this protocol.
+
+            However, if the user's intent is a conversation, simply return a plaintext response
+            to the user in a friendly manner
             """},
         ]
         self.generative_message_base=[
