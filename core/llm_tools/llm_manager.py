@@ -60,7 +60,6 @@ class LLMManager:
         Perform a chat completion request using the raw OpenAI client.
         """
         response = self.client.chat.completions.create(
-            # model="accounts/fireworks/models/llama-v3p1-8b-instruct",
             model=model or self.comp_model,
             messages=messages,
             temperature=temperature,
