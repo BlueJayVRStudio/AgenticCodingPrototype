@@ -1,6 +1,6 @@
-from core.SingleAgent import SingleAgent
+from agents.base_agent import BaseAgent
 
-singleAgent = SingleAgent()
+singleAgent = BaseAgent()
 
 while True:
     # print(singleAgent.messages)

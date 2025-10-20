@@ -1,0 +1,12 @@
+shared_vector_dbs:
+  - name: "global_knowledge_base"
+    backend: "chroma"
+    persist_directory: "./vector_db/global_knowledge"
+    embedding:
+      model: "text-embedding-3-small"
+    chunk_size: 2500
+    chunk_overlap: 250
+    retriever_k: 5
+
+secrets:
+  dotenv_path: "~/.agenticai/.env"
