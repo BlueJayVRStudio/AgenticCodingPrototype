@@ -3,42 +3,27 @@ import json_repair
 from datetime import datetime
 from openai import OpenAI
 from langchain.chains import RetrievalQA
-from langchain_openai import ChatOpenAI
 from core.config.settings_loader import Settings
 from core.utils.func_build_tools import build_tools_from_functions, get_args_in_order
-from core.utils.vector_db_manager import VectorDBManager
+from core.db_tools.vector_db_manager import VectorDBManager
+from core.llm_tools.llm_manager import LLMManager
 
 class BaseAgent:
     def __init__(self, agent_name: str = "base_agent"):
+        self.agent_name = agent_name
         # Load settings
         self.settings = Settings()
         # Load agent-specific configuration
         self.agent_conf = self.settings.load_agent_config(agent_name)
         self.root_dir = self.agent_conf["project_root"]
 
-        llm_conf = self.agent_conf["llm"]["chat"]
-        comp_conf = self.agent_conf["llm"]["chat_completion"]
-        mem_conf = self.agent_conf["memory"]["vector_db"]
-
-        self.llm_model = llm_conf["model"]
-        self.comp_model = comp_conf["model"]
-
-        llm_api_key = self.settings.resolve_api_key(llm_conf["api_key_name"])
-        comp_api_key = self.settings.resolve_api_key(comp_conf["api_key_name"])
-
         # LLMs
-        self.llm = ChatOpenAI(
-            model=self.llm_model,
-            openai_api_base=llm_conf["base_url"],
-            openai_api_key=llm_api_key,
-        )
-        self.client = OpenAI(
-            base_url=comp_conf["base_url"],
-            api_key=comp_api_key,
-        )
+        self.llm_manager = LLMManager(self.settings, agent_name)
+        self.llm = self.llm_manager.get_chat_llm()
+        self.client = self.llm_manager.get_client()
 
         # Vector DB
-        self.vector_manager = VectorDBManager(mem_conf)
+        self.vector_manager = VectorDBManager(self.settings, agent_name)
         self.db, self.retriever, self.embeddings = self.vector_manager.load_or_create()
 
         # RetrievalQA chain
@@ -195,13 +180,7 @@ class BaseAgent:
     def generate(self, user_query):
         self.messages.append(self.generate_query(user_query))
 
-        resp = self.client.chat.completions.create(
-            # model="accounts/fireworks/models/llama-v3p1-8b-instruct",
-            model=self.comp_model,
-            messages=self.generative_message_base + self.messages,
-            temperature=0.0,
-            max_tokens=1024,
-        )
+        resp = self.llm_manager.chat_completion(self.generative_message_base + self.messages)
 
         content = resp.choices[0].message.content
         self.messages.append(self.generate_assistant(content))
@@ -210,16 +189,9 @@ class BaseAgent:
     def run(self, user_query):
         self.messages.append(self.generate_query(user_query))
 
-        resp = self.client.chat.completions.create(
-            # model="accounts/fireworks/models/llama-v3p1-8b-instruct",
-            model=self.comp_model,
-            messages=self.instruct_message_base + self.messages,
-            temperature=0.0,
-            max_tokens=1024,
-        )
+        resp = self.llm_manager.chat_completion(self.instruct_message_base + self.messages)
 
         self.messages.append(self.generate_assistant(resp.choices[0].message.content))
-        # print(self.messages)
 
         try:
             json_object = json_repair.loads(resp.choices[0].message.content)
@@ -227,5 +199,4 @@ class BaseAgent:
             return result, True
         except Exception as e:
             return resp.choices[0].message.content, False
-        
 

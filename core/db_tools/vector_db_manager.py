@@ -6,6 +6,7 @@ from langchain_community.document_loaders import (
 from langchain.embeddings import OllamaEmbeddings
 import os
 import shutil
+from core.config.settings_loader import Settings
 
 class DummyLoader:
     def lazy_load(self):
@@ -17,7 +18,12 @@ class VectorDBManager:
     Combines both 'builder' and 'helper' responsibilities.
     """
 
-    def __init__(self, mem_conf: dict):
+    def __init__(self, settings: Settings, agent_name: str):
+        self.agent_conf = settings.load_agent_config(agent_name)
+        self.root_dir = self.agent_conf["project_root"]
+        
+        mem_conf = self.agent_conf["memory"]["vector_db"]
+
         self.mem_conf = mem_conf
         self.persist_dir = mem_conf["persist_directory"]
         if not os.path.exists(self.persist_dir):
