@@ -63,7 +63,10 @@ class BaseAgent:
             
             
             However, if the user's intent is a conversation, simply return a plaintext response
-            to the user in a friendly manner. This is the only exception to the routing rule.
+            with the header "CONVERSATION: " in all caps to the user in a friendly manner. This is 
+            the only exception to the routing rule. Example:
+
+            CONVERSATION: This is a sample message!
             """},
         ]
         self.generative_message_base=[
@@ -200,18 +203,24 @@ class BaseAgent:
         resp = self.llm_manager.chat_completion(self.instruct_message_base + self.messages)
 
         self.messages.append(self.generate_assistant(resp.choices[0].message.content))
-        tool_calls = self.extract_root_json_maps(resp.choices[0].message.content)
-        # quit()
-        try:
-            results = []
-            for call in tool_calls:
-                json_object = json_repair.loads(call)
-                self.messages.append(self.generate_assistant(call))
-                result = self.func_lookup[json_object["tool"]](*get_args_in_order(self.func_lookup[json_object["tool"]], json_object["arguments"]))
-                results.append(result)
-            return results, True
-        except Exception as e:
-            return resp.choices[0].message.content, False
+
+        header = "CONVERSATION:"
+
+        if len(resp.choices[0].message.content) >= len(header) and resp.choices[0].message.content[:len(header)] == header:
+            return resp.choices[0].message.content[len(header):], False
+        else:
+            tool_calls = self.extract_root_json_maps(resp.choices[0].message.content)
+            # quit()
+            try:
+                results = []
+                for call in tool_calls:
+                    json_object = json_repair.loads(call)
+                    self.messages.append(self.generate_assistant(call))
+                    result = self.func_lookup[json_object["tool"]](*get_args_in_order(self.func_lookup[json_object["tool"]], json_object["arguments"]))
+                    results.append(result)
+                return results, True
+            except Exception as e:
+                return resp.choices[0].message.content, False
 
     
     def extract_root_json_maps(self, text: str):
