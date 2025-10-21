@@ -31,14 +31,12 @@ python main.py
 
 - get_weather — Retrieve the current weather for a city and country (mock implementation — prints a sample weather report)
 - create_directory — Create a new folder within ./my_docs/
-- save_code_output — Generate code or document and save it in ./my_docs/
 - modify_document — Edit or update existing documents in ./my_docs/
 - email_categorizer — Categorize messages as Spam, Urgent, Invite, or Promotion
 - add_nums — Return the sum of two numbers
 - query_rag — Query the Retrieval-Augmented Generation (RAG) system for contextual knowledge
 
-You can ask any question in natural language, and the agent will automatically route it to the appropriate tool.
-If it cannot recognize the intent, or if the user insists on casual conversation, it gracefully falls back to conversation mode.
+You can ask any question in natural language, and the agent will automatically route it to the appropriate tool. Recent update includes multi-tool request, meaning the agent will understand and execute multiple tools from a single query. Finally, if the agent cannot recognize the intent, or if the user insists on a casual conversation, it gracefully falls back to conversation mode.
 
 ### Sample Work Flow:
 ```text
