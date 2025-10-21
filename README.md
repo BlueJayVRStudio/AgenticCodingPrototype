@@ -66,6 +66,3 @@ Ask:
 1. Optimize Short-Term Memory
     - Implement LLM-based pruning of short-term context to reduce token usage while keeping relevant information.
     - Integrate the existing Retrieval-Augmented Generation (RAG) system into semantic recall for improved contextual referencing.
-2. Refactor Code Handling
-    - The modify_document tool is stable and functions effectively for structured edits.
-    - The save_code_output tool is less reliable and may be removed or restructured to decouple task routing from generative logic.
