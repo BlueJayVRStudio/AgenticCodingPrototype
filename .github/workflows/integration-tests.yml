@@ -31,4 +31,5 @@ jobs:
         run: pip install -r requirements_chill.txt
 
       - name: Run integration tests
-        run: pytest -v -m integration
+        run: pytest -m integration
+        # run: pytest -v -m integration

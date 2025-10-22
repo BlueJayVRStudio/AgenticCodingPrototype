@@ -20,12 +20,23 @@ llm:
   chat:
     model: "accounts/fireworks/models/llama-v3p1-8b-instruct"
     base_url: "https://api.fireworks.ai/inference/v1"
-    api_key_name: "FIREWORKS_API_KEY"
+    api_key_name: "FW_TOKEN"
 
   chat_completion:
     model: "accounts/fireworks/models/llama-v3p1-8b-instruct"
     base_url: "https://api.fireworks.ai/inference/v1"
-    api_key_name: "FIREWORKS_API_KEY"
+    api_key_name: "FW_TOKEN"
+
+# llm:
+#   chat:
+#     model: "accounts/fireworks/models/llama-v3p1-8b-instruct"
+#     base_url: "https://api.fireworks.ai/inference/v1"
+#     api_key_name: "FIREWORKS_API_KEY"
+
+#   chat_completion:
+#     model: "accounts/fireworks/models/llama-v3p1-8b-instruct"
+#     base_url: "https://api.fireworks.ai/inference/v1"
+#     api_key_name: "FIREWORKS_API_KEY"
     
 memory:
   vector_db:
