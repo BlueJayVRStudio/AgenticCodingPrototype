@@ -2,6 +2,9 @@ accelerate
 chromadb
 dirtyjson
 httptools
+inflect
+jaraco-collections
+jaraco-functools
 jaraco.collections
 json-repair
 langchain-community
@@ -10,6 +13,7 @@ langchain-openai
 matplotlib
 pip-chill
 platformdirs
+pytest
 scipy
 transformers
 unstructured

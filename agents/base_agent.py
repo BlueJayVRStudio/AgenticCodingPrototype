@@ -114,7 +114,7 @@ class BaseAgent:
             a: string form of integer
             b: string form of integer
         """
-        return "the sum between A and B is: " + str(int(a) + int(b))
+        return f"The sum between {a} and {b} is: {int(a) + int(b)}"
 
     def query_rag(self, query: str) -> str:
         """
@@ -207,7 +207,7 @@ class BaseAgent:
         header = "CONVERSATION:"
 
         if len(resp.choices[0].message.content) >= len(header) and resp.choices[0].message.content[:len(header)] == header:
-            return resp.choices[0].message.content[len(header):], False
+            return [resp.choices[0].message.content[len(header):]], False
         else:
             tool_calls = self.extract_root_json_maps(resp.choices[0].message.content)
             # quit()
@@ -220,7 +220,7 @@ class BaseAgent:
                     results.append(result)
                 return results, True
             except Exception as e:
-                return resp.choices[0].message.content, False
+                return [resp.choices[0].message.content], False
 
     
     def extract_root_json_maps(self, text: str):

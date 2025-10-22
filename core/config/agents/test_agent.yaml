@@ -1,0 +1,41 @@
+name: "test_agent"
+description: "A simple demonstration agent showcasing the basic capabilities of the 
+  AgenticAI framework. Handles straightforward task routing, file
+  operations, and small-scale code or document generation."
+
+project_root: "./test_docs"
+
+llm:
+  chat:
+    model: "llama3.1:8b-instruct-q4_K_M"
+    base_url: "http://localhost:11434/v1"
+    api_key_name: "OLLAMA_API_KEY"
+
+  chat_completion:
+    model: "llama3.1:8b-instruct-q4_K_M"
+    base_url: "http://localhost:11434/v1"
+    api_key_name: "OLLAMA_API_KEY"
+
+# llm:
+#   chat:
+#     model: "accounts/fireworks/models/llama-v3p1-8b-instruct"
+#     base_url: "https://api.fireworks.ai/inference/v1"
+#     api_key_name: "FW_TOKEN"
+
+#   chat_completion:
+#     model: "accounts/fireworks/models/llama-v3p1-8b-instruct"
+#     base_url: "https://api.fireworks.ai/inference/v1"
+#     api_key_name: "FW_TOKEN"
+    
+memory:
+  vector_db:
+    name: "base_agent_memory"
+    backend: "chroma"
+    persist_directory: "./vector_db/base_agent_memory"
+    embedding:
+      model: "nomic-embed-text"
+    chunk_size: 2000
+    chunk_overlap: 200
+    retriever_k: 3
+
+
