@@ -5,6 +5,7 @@ import time
 import random
 
 def safe_run_agent(agent, prompt):
+    time.sleep(2)
     for attempt in range(5):
         try:
             return agent.run(prompt)
@@ -43,6 +44,7 @@ def test_base_agent_integrations():
         "statement of 'hello world!' and the other being a text "
         "file of a grocery list that lists apple and pineapple."
     ))
+    print(result)
     assert success
     assert len(result) == 3
     assert os.path.exists("./test_docs/some_python_scripts"), "directory creation failed"

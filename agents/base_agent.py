@@ -220,7 +220,7 @@ class BaseAgent:
                     results.append(result)
                 return results, True
             except Exception as e:
-                # print(f"Exception!: {e}")
+                print(f"Exception!: {e}")
                 return [resp.choices[0].message.content], False
     
     def extract_root_json_maps(self, text: str):
