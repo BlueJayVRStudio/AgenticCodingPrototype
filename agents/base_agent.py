@@ -191,8 +191,6 @@ class BaseAgent:
 
     def generate(self, user_query):
         self.messages.append(self.generate_query(user_query))
-        if (self.agent_name == "test_agent"):
-            time.sleep(5)
         resp = self.llm_manager.chat_completion(self.generative_message_base + self.messages)
 
         content = resp.choices[0].message.content
@@ -222,7 +220,7 @@ class BaseAgent:
                     results.append(result)
                 return results, True
             except Exception as e:
-                print(f"Exception!: {e}")
+                # print(f"Exception!: {e}")
                 return [resp.choices[0].message.content], False
     
     def extract_root_json_maps(self, text: str):

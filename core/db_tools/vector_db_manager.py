@@ -7,6 +7,7 @@ from langchain.embeddings import OllamaEmbeddings
 import os
 import shutil
 from core.config.settings_loader import Settings
+from langchain_fireworks import FireworksEmbeddings
 
 class DummyLoader:
     def lazy_load(self):
@@ -33,8 +34,15 @@ class VectorDBManager:
         self.embedding_model = mem_conf["embedding"]["model"]
         self.retriever_k = mem_conf.get("retriever_k", 3)
 
+        self.embeddings = None
         # Initialize embeddings
-        self.embeddings = OllamaEmbeddings(model=self.embedding_model)
+        if agent_name == "test_agent":
+            self.embeddings = FireworksEmbeddings(
+                model="nomic-ai/nomic-embed-text-v1",
+                fireworks_api_key=os.getenv("FIREWORKS_API_KEY")
+            )
+        else:
+            self.embeddings = OllamaEmbeddings(model=self.embedding_model)
 
     # Document loading
     def is_binary(self, path):

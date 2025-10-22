@@ -40,9 +40,9 @@ llm:
     
 memory:
   vector_db:
-    name: "base_agent_memory"
+    name: "test_agent_memory"
     backend: "chroma"
-    persist_directory: "./vector_db/base_agent_memory"
+    persist_directory: "./vector_db/test_agent_memory"
     embedding:
       model: "nomic-embed-text"
     chunk_size: 2000

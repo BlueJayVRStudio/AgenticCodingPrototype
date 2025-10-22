@@ -1,5 +1,6 @@
 import inspect
 from typing import get_type_hints
+import time
 
 def build_tools_from_functions(funcs):
     tool_descriptions = []

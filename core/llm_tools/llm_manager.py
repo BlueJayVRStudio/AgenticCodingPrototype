@@ -1,7 +1,7 @@
 from openai import OpenAI
 from langchain_openai import ChatOpenAI
 from core.config.settings_loader import Settings
-
+import time
 
 class LLMManager:
     """
@@ -11,6 +11,7 @@ class LLMManager:
     """
 
     def __init__(self, settings: Settings, agent_name: str):
+        self.agent_name = agent_name
         self.settings = settings
         self.agent_conf = self.settings.load_agent_config(agent_name)
 
@@ -59,6 +60,9 @@ class LLMManager:
         """
         Perform a chat completion request using the raw OpenAI client.
         """
+        if self.agent_name == "test_agent":
+            time.sleep(5)
+
         response = self.client.chat.completions.create(
             model=model or self.comp_model,
             messages=messages,
