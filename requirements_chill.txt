@@ -15,7 +15,6 @@ pip-chill
 platformdirs
 pytest
 scipy
-transformers
 unstructured
 uvloop
 watchdog

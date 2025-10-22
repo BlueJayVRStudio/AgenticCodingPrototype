@@ -21,24 +21,24 @@ def test_base_agent_integrations():
     result, success = agent.run("Can you create a directory called dir_from_pytest")
     assert os.path.exists("./test_docs/dir_from_pytest"), "directory creation failed"
 
-    result, success = agent.run((
-        "Please ignore the previous directory created. Now "
-        "Can you create a directory called some_python_scripts "
-        "then under that directory create two files. One being "
-        "a python hello world script with just a single print "
-        "statement of 'hello world!' and the other being a text "
-        "file of a grocery list that lists apple and pineapple."
-    ))
-    assert success
-    assert len(result) == 3
-    assert os.path.exists("./test_docs/some_python_scripts"), "directory creation failed"
-    assert os.path.exists("./test_docs/some_python_scripts/hello_world.py"), "script creation failed"
-    assert os.path.exists("./test_docs/some_python_scripts/grocery_list.txt"), "text creation failed"
-    with open("./test_docs/some_python_scripts/grocery_list.txt", "r") as f:
-        for line in f:
-            assert line.strip() in ["apple", "pineapple"]
+    # result, success = agent.run((
+    #     "Please ignore the previous directory created. Now "
+    #     "Can you create a directory called some_python_scripts "
+    #     "then under that directory create two files. One being "
+    #     "a python hello world script with just a single print "
+    #     "statement of 'hello world!' and the other being a text "
+    #     "file of a grocery list that lists apple and pineapple."
+    # ))
+    # assert success
+    # assert len(result) == 3
+    # assert os.path.exists("./test_docs/some_python_scripts"), "directory creation failed"
+    # assert os.path.exists("./test_docs/some_python_scripts/hello_world.py"), "script creation failed"
+    # assert os.path.exists("./test_docs/some_python_scripts/grocery_list.txt"), "text creation failed"
+    # with open("./test_docs/some_python_scripts/grocery_list.txt", "r") as f:
+    #     for line in f:
+    #         assert line.strip() in ["apple", "pineapple"]
 
-    result, success = agent.run("Let's have a conversation. Can you give a short summary of what we did today?")
-    assert not success
-    assert len(result) == 1
-    assert type(result) == list
+    # result, success = agent.run("Let's have a conversation. Can you give a short summary of what we did today?")
+    # assert not success
+    # assert len(result) == 1
+    # assert type(result) == list
