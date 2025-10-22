@@ -8,6 +8,7 @@ from core.config.settings_loader import Settings
 from core.utils.func_build_tools import build_tools_from_functions, get_args_in_order
 from core.db_tools.vector_db_manager import VectorDBManager
 from core.llm_tools.llm_manager import LLMManager
+import time
 
 class BaseAgent:
     def __init__(self, agent_name: str = "base_agent"):
@@ -190,7 +191,8 @@ class BaseAgent:
 
     def generate(self, user_query):
         self.messages.append(self.generate_query(user_query))
-
+        if (self.agent_name == "test_agent"):
+            time.sleep(5)
         resp = self.llm_manager.chat_completion(self.generative_message_base + self.messages)
 
         content = resp.choices[0].message.content
