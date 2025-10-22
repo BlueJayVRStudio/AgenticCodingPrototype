@@ -38,7 +38,7 @@ def test_base_agent_integrations():
         for line in f:
             assert line.strip() in ["apple", "pineapple"]
 
-    result, success = agent.run("Let's have a conversation. Can you summarize what we did today?")
+    result, success = agent.run("Let's have a conversation. Can you give a short summary of what we did today?")
     assert not success
     assert len(result) == 1
     assert type(result) == list
