@@ -3,11 +3,10 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import (
     DirectoryLoader, TextLoader, PyPDFLoader, UnstructuredWordDocumentLoader
 )
-from langchain.embeddings import OllamaEmbeddings
+from core.config.settings_loader import Settings
+from core.embedding_tools.embedding_provider import EmbeddingProvider
 import os
 import shutil
-from core.config.settings_loader import Settings
-from langchain_fireworks import FireworksEmbeddings
 
 class DummyLoader:
     def lazy_load(self):
@@ -31,18 +30,14 @@ class VectorDBManager:
             os.makedirs(self.persist_dir)
         self.chunk_size = mem_conf["chunk_size"]
         self.chunk_overlap = mem_conf["chunk_overlap"]
-        self.embedding_model = mem_conf["embedding"]["model"]
         self.retriever_k = mem_conf.get("retriever_k", 3)
 
-        self.embeddings = None
         # Initialize embeddings
-        if agent_name == "test_agent":
-            self.embeddings = FireworksEmbeddings(
-                model="nomic-ai/nomic-embed-text-v1",
-                fireworks_api_key=os.getenv("FIREWORKS_API_KEY")
-            )
-        else:
-            self.embeddings = OllamaEmbeddings(model=self.embedding_model)
+        embedding_conf = self.agent_conf["memory"]["embedding"]
+        self.embeddings = EmbeddingProvider(
+            embedding_conf["provider"], 
+            embedding_conf["model"], 
+            embedding_conf["api_key_name"]).get_provider()
 
     # Document loading
     def is_binary(self, path):

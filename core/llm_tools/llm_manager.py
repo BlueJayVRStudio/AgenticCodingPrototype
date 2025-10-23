@@ -40,6 +40,8 @@ class LLMManager:
             api_key=self.comp_api_key,
         )
 
+        self.rate_limit_chat_completions = self.agent_conf["llm"]["chat_completion"]["rate_limit_seconds"]
+
     # Public Accessors
     def get_chat_llm(self):
         """Return LangChain Chat LLM instance."""
@@ -60,8 +62,7 @@ class LLMManager:
         """
         Perform a chat completion request using the raw OpenAI client.
         """
-        if self.agent_name == "test_agent":
-            time.sleep(5)
+        time.sleep(self.rate_limit_chat_completions)
 
         response = self.client.chat.completions.create(
             model=model or self.comp_model,

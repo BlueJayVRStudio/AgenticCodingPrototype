@@ -10,30 +10,37 @@ llm:
     model: "llama3.1:8b-instruct-q4_K_M"
     base_url: "http://localhost:11434/v1"
     api_key_name: "OLLAMA_API_KEY"
+    rate_limit_seconds: 0.0
 
   chat_completion:
     model: "llama3.1:8b-instruct-q4_K_M"
     base_url: "http://localhost:11434/v1"
     api_key_name: "OLLAMA_API_KEY"
+    rate_limit_seconds: 0.0
 
 # llm:
 #   chat:
 #     model: "accounts/fireworks/models/llama-v3p1-8b-instruct"
 #     base_url: "https://api.fireworks.ai/inference/v1"
 #     api_key_name: "FW_TOKEN"
+#     rate_limit_seconds: 1.0
 
 #   chat_completion:
 #     model: "accounts/fireworks/models/llama-v3p1-8b-instruct"
 #     base_url: "https://api.fireworks.ai/inference/v1"
 #     api_key_name: "FW_TOKEN"
+#     rate_limit_seconds: 1.0
     
 memory:
+  embedding:
+    provider: "OLLAMA"
+    model: "nomic-embed-text"
+    api_key_name: "OLLAMA_API_KEY"
+
   vector_db:
     name: "base_agent_memory"
     backend: "chroma"
     persist_directory: "./vector_db/base_agent_memory"
-    embedding:
-      model: "nomic-embed-text"
     chunk_size: 2000
     chunk_overlap: 200
     retriever_k: 3
