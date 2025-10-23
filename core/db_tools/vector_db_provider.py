@@ -12,13 +12,11 @@ class DummyLoader:
     def lazy_load(self):
         return []
     
-class VectorDBManager:
+class VectorDBProvider:
     """
-    Handles building, loading, and managing a vector database instance.
-    Combines both 'builder' and 'helper' responsibilities.
     """
 
-    def __init__(self, settings: Settings, agent_name: str):
+    def __init__(self, settings: Settings, agent_name: str, embedding_provider: EmbeddingProvider):
         self.agent_conf = settings.load_agent_config(agent_name)
         self.root_dir = self.agent_conf["project_root"]
         
@@ -33,11 +31,7 @@ class VectorDBManager:
         self.retriever_k = mem_conf.get("retriever_k", 3)
 
         # Initialize embeddings
-        embedding_conf = self.agent_conf["memory"]["embedding"]
-        self.embeddings = EmbeddingProvider(
-            embedding_conf["provider"], 
-            embedding_conf["model"], 
-            embedding_conf["api_key_name"]).get_provider()
+        self.embeddings = embedding_provider.get_provider()
 
     # Document loading
     def is_binary(self, path):
@@ -125,12 +119,12 @@ class VectorDBManager:
             )
             retriever = db.as_retriever(search_kwargs={"k": self.retriever_k})
             print(f"[VectorDBManager] Loaded existing DB from {self.persist_dir}")
-            return db, retriever, self.embeddings
+            return db, retriever
         except Exception:
             print(f"[VectorDBManager] No existing DB found at {self.persist_dir}, initializing empty.")
             db = Chroma.from_documents([], embedding=self.embeddings, persist_directory=str(self.persist_dir))
             retriever = db.as_retriever(search_kwargs={"k": self.retriever_k})
-            return db, retriever, self.embeddings
+            return db, retriever
     
     # Single-file update
     def upsert_file(self, file_path: str):

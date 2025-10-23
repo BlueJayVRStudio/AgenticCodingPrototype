@@ -1,6 +1,7 @@
-from agents.base_agent import BaseAgent
+from core.factory.agent_factory import AgentFactory
 
-singleAgent = BaseAgent()
+agent_factory = AgentFactory()
+singleAgent = agent_factory.create_base_agent("base_agent")
 
 while True:
     # print(singleAgent.messages)

@@ -1,0 +1,35 @@
+name: "local_test_agent"
+description: "A simple demonstration agent showcasing the basic capabilities of the 
+  AgenticAI framework. Handles straightforward task routing, file
+  operations, and small-scale code or document generation."
+
+project_root: "./test_docs"
+
+llm:
+  chat:
+    model: "llama3.1:8b-instruct-q4_K_M"
+    base_url: "http://localhost:11434/v1"
+    api_key_name: "OLLAMA_API_KEY"
+    rate_limit_seconds: 0.0
+
+  chat_completion:
+    model: "llama3.1:8b-instruct-q4_K_M"
+    base_url: "http://localhost:11434/v1"
+    api_key_name: "OLLAMA_API_KEY"
+    rate_limit_seconds: 0.0
+    
+memory:
+  embedding:
+    provider: "OLLAMA"
+    model: "nomic-embed-text"
+    api_key_name: "OLLAMA_API_KEY"
+    
+  vector_db:
+    name: "test_agent_memory"
+    backend: "chroma"
+    persist_directory: "./vector_db/test_agent_memory"
+    chunk_size: 2000
+    chunk_overlap: 200
+    retriever_k: 3
+
+

@@ -4,29 +4,35 @@ import json
 from datetime import datetime
 from openai import OpenAI
 from langchain.chains import RetrievalQA
-from core.config.settings_loader import Settings
 from core.utils.func_build_tools import build_tools_from_functions, get_args_in_order
-from core.db_tools.vector_db_manager import VectorDBManager
-from core.llm_tools.llm_manager import LLMManager
-import time
+
+from core.config.project_root_provider import ProjectRootProvider
+from core.db_tools.vector_db_provider import VectorDBProvider
+from core.llm_tools.llm_chat_provider import LLMChatProvider
+from core.llm_tools.llm_chat_completion_provider import LLMChatCompletionProvider
 
 class BaseAgent:
-    def __init__(self, agent_name: str = "base_agent"):
+    def __init__(
+            self, 
+            project_root_provider: ProjectRootProvider,
+            vector_db_provider: VectorDBProvider, 
+            llm_chat_provider: LLMChatProvider, 
+            llm_chat_completion_provider: LLMChatCompletionProvider, 
+            agent_name: str
+        ):
         self.agent_name = agent_name
-        # Load settings
-        self.settings = Settings()
         # Load agent-specific configuration
-        self.agent_conf = self.settings.load_agent_config(agent_name)
-        self.root_dir = self.agent_conf["project_root"]
+        self.root_dir = project_root_provider.root_dir
 
         # LLMs
-        self.llm_manager = LLMManager(self.settings, agent_name)
-        self.llm = self.llm_manager.get_chat_llm()
-        self.client = self.llm_manager.get_client()
+        self.llm_chat_provider = llm_chat_provider
+        self.llm_chat_completion_provider = llm_chat_completion_provider
+        self.llm = self.llm_chat_provider.get_chat_llm()
+        self.client = self.llm_chat_completion_provider.get_client()
 
         # Vector DB
-        self.vector_manager = VectorDBManager(self.settings, agent_name)
-        self.db, self.retriever, self.embeddings = self.vector_manager.load_or_create()
+        self.vector_db_provider = vector_db_provider
+        self.db, self.retriever = self.vector_db_provider.load_or_create()
 
         # RetrievalQA chain
         self.qa = RetrievalQA.from_chain_type(
@@ -175,7 +181,7 @@ class BaseAgent:
         with open(file_path, "w") as f:
             f.write(result)
         
-        self.vector_manager.upsert_file(file_path=file_path)
+        self.vector_db_provider.upsert_file(file_path=file_path)
 
         print(f"Modified and saved code output to {file_path}")
     
@@ -191,7 +197,7 @@ class BaseAgent:
 
     def generate(self, user_query):
         self.messages.append(self.generate_query(user_query))
-        resp = self.llm_manager.chat_completion(self.generative_message_base + self.messages)
+        resp = self.llm_chat_completion_provider.chat_completion(self.generative_message_base + self.messages)
 
         content = resp.choices[0].message.content
         self.messages.append(self.generate_assistant(content))
@@ -200,7 +206,7 @@ class BaseAgent:
     def run(self, user_query):
         self.messages.append(self.generate_query(user_query))
 
-        resp = self.llm_manager.chat_completion(self.instruct_message_base + self.messages)
+        resp = self.llm_chat_completion_provider.chat_completion(self.instruct_message_base + self.messages)
 
         self.messages.append(self.generate_assistant(resp.choices[0].message.content))
 

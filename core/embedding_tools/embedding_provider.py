@@ -14,8 +14,15 @@ class EmbeddingProvider:
 
     The design allows easy extension to support additional providers in the future.
     """
-    def __init__(self, provider: str, model: str, api_key_name: str):
+    def __init__(self, settings: Settings, agent_name: str):
+        self.agent_conf = settings.load_agent_config(agent_name)
+
+        embedding_conf = self.agent_conf["memory"]["embedding"]
+        provider = embedding_conf["provider"]
+        model = embedding_conf["model"]
+        api_key_name = embedding_conf["api_key_name"]
         self.embeddings = None
+        
         if provider == "OLLAMA":
             self.embeddings = OllamaEmbeddings(model=model)
         elif provider == "FIREWORKS":

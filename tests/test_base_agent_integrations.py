@@ -1,6 +1,6 @@
 import shutil, os
 import pytest
-from agents.base_agent import BaseAgent
+from core.factory.agent_factory import AgentFactory
 
 @pytest.fixture(scope="function", autouse=True)
 def clean_test_docs():
@@ -13,7 +13,11 @@ def clean_test_docs():
 
 @pytest.mark.integration
 def test_base_agent_integrations():
-    agent = BaseAgent("test_agent")
+    agent_factory = AgentFactory()
+    agent = agent_factory.create_base_agent("test_agent")
+    # agent = agent_factory.create_base_agent("local_test_agent")
+    # agent = agent_factory.hybridize_base_agent("test_agent", "base_agent", "test_agent", "base_agent", "base_agent")
+    
     result, success = agent.run("Can you sum up 4 and 5?")
     assert result[0] == "The sum between 4 and 5 is: 9", "failed to add two numbers"
     assert success

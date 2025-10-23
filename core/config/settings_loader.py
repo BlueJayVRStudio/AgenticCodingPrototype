@@ -39,7 +39,10 @@ class Settings:
         return node or default
 
     def resolve_api_key(self, api_key_name: str) -> str:
-        """Fetch API key from environment."""
+        """
+        Fetch API key from environment.
+        WARNING: DO NOT PRINT THIS. LOL
+        """
         if not api_key_name:
             return None
         value = os.getenv(api_key_name)
