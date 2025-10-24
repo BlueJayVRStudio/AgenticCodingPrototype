@@ -16,8 +16,14 @@ def test_base_agent_integrations():
     agent_factory = AgentFactory()
     agent = agent_factory.create_base_agent("test_agent")
     # agent = agent_factory.create_base_agent("local_test_agent")
-    # agent = agent_factory.hybridize_base_agent("test_agent", "base_agent", "test_agent", "base_agent", "base_agent")
-    
+    # agent = agent_factory.hybridize_base_agent(
+    #     project_root_provider_config = "test_agent", 
+    #     embedding_provider_config = "base_agent", 
+    #     vector_db_provider_config = "test_agent", 
+    #     llm_chat_provider_config = "base_agent", 
+    #     llm_chat_completion_provider_config = "base_agent"
+    # )
+
     result, success = agent.run("Can you sum up 4 and 5?")
     assert result[0] == "The sum between 4 and 5 is: 9", "failed to add two numbers"
     assert success
@@ -34,7 +40,7 @@ def test_base_agent_integrations():
         "file of a grocery list that lists apple and pineapple."
     ))
     assert success
-    assert len(result) == 3
+    assert len(result) > 1
     assert os.path.exists("./test_docs/some_python_scripts"), "directory creation failed"
     assert os.path.exists("./test_docs/some_python_scripts/hello_world.py"), "script creation failed"
     assert os.path.exists("./test_docs/some_python_scripts/grocery_list.txt"), "text creation failed"

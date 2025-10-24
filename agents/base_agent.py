@@ -45,6 +45,7 @@ class BaseAgent:
         self.tools = [
             self.get_weather,
             self.create_directory,
+            self.create_document,
             self.modify_document,
             self.email_categorizer,
             self.add_nums,
@@ -67,7 +68,9 @@ class BaseAgent:
             {{"tool": "tool_name", "arguments": {{...}}}},
             {{"tool": "tool_name", "arguments": {{...}}}},
             ...
-            
+
+            Remember, if the intent is to use a tool, only use tools from the given list
+            of tools. Do not generate a false tool call.            
             
             However, if the user's intent is a conversation, simply return a plaintext response
             with the header "CONVERSATION: " in all caps to the user in a friendly manner. This is 
@@ -184,9 +187,25 @@ class BaseAgent:
         self.vector_db_provider.upsert_file(file_path=file_path)
 
         print(f"Modified and saved code output to {file_path}")
+        return filename
     
-        # self.messages.pop()
-        # self.messages.pop()
+    def create_document(self, filename) -> str:
+        """
+        Create new file at given file path.
+
+        Arguments:
+            filename (string): The path of the file to create (e.g., 'dir0/dir1/script.py').
+        """
+        
+        if not filename:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"output_{timestamp}.py"
+        file_path = os.path.join(self.root_dir, filename)
+        with open(file_path, "w") as f:
+            f.write("")
+        
+        print(f"Created new file at {file_path}")
+    
         return filename
     
     def generate_assistant(self, content):
@@ -217,6 +236,7 @@ class BaseAgent:
         else:
             tool_calls = self.extract_root_json_maps(resp.choices[0].message.content)
             # quit()
+            # print(tool_calls)
             try:
                 results = []
                 for call in tool_calls:

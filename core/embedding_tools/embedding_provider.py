@@ -30,6 +30,11 @@ class EmbeddingProvider:
                 model=model,
                 fireworks_api_key=os.getenv(api_key_name)
             )
-    
+        elif "@" in provider:
+            self.embeddings = OllamaEmbeddings(
+                base_url= provider.split("@")[1],
+                model=model
+            )
+
     def get_provider(self):
         return self.embeddings
