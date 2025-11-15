@@ -46,8 +46,20 @@ class DocumentCheckerAgent:
             {"role": "system", "content": f"""
             You always responds in valid JSON blob.
             
-            Your sole job is to check for spelling, punctuation and grammar errors. Please return your verdict on whether you'd pass the document or not as a boolean - True for pass and False for fail. If pass, generate an empty string, but if fail, generate an edited document. The suggested edit should be flawless and publication ready. For example:
+            Your job is to perform lightweight document inspection:
+            DO:
+                - catch spelling and punctuation errors
+                - catch sensitive information such as passwords and api keys
+                - catch unexpected profanities
+                - catch any other fatal mistakes
+            DO NOT:
+                - be too nitpicky
 
+            Please return return your verdict as true or false for pass or fail, respectively.
+            If pass return an empty string for suggested_edit. If fail, return the entire edited document for suggested_edit.
+            
+            Examples:
+            
             **Example 1**:
              
             User Query:
