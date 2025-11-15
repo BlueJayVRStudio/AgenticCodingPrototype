@@ -1,5 +1,6 @@
 from core.config.settings_loader import *
 from agents.base_agent import *
+from agents.document_checker_agent import *
 from core.embedding_tools.embedding_provider import EmbeddingProvider
 from core.db_tools.vector_db_provider import VectorDBProvider
 from core.llm_tools.llm_chat_provider import LLMChatProvider
@@ -22,6 +23,21 @@ class AgentFactory:
             llm_chat_provider, 
             llm_chat_completion_provider, 
             agent_name
+        )
+    
+    def create_document_checker_agent(self):
+        project_root_provider = ProjectRootProvider(self.settings, "document_checker_agent")
+        embedding_provider = EmbeddingProvider(self.settings, "document_checker_agent")
+        vector_db_provider = VectorDBProvider(self.settings, "document_checker_agent", embedding_provider)
+        llm_chat_provider = LLMChatProvider(self.settings, "document_checker_agent")
+        llm_chat_completion_provider = LLMChatCompletionProvider(self.settings, "document_checker_agent")
+        
+        return DocumentCheckerAgent(
+            project_root_provider, 
+            vector_db_provider, 
+            llm_chat_provider, 
+            llm_chat_completion_provider, 
+            "document_checker_agent"
         )
 
     def hybridize_base_agent(

@@ -1,0 +1,33 @@
+name: "document_checker_agent"
+description: "A simple docs checker."
+
+project_root: "./my_docs"
+
+llm:
+  chat:
+    model: "qwen3:8b"
+    base_url: "http://localhost:11434/v1"
+    api_key_name: "OLLAMA_API_KEY"
+    rate_limit_seconds: 0.0
+
+  chat_completion:
+    model: "qwen3:8b"
+    base_url: "http://localhost:11434/v1"
+    api_key_name: "OLLAMA_API_KEY"
+    rate_limit_seconds: 0.0
+
+memory:
+  embedding:
+    provider: "OLLAMA"
+    model: "nomic-embed-text"
+    api_key_name: "OLLAMA_API_KEY"
+
+  vector_db:
+    name: "base_agent_memory"
+    backend: "chroma"
+    persist_directory: "./vector_db/base_agent_memory"
+    chunk_size: 2000
+    chunk_overlap: 200
+    retriever_k: 3
+
+
