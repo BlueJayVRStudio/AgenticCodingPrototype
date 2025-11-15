@@ -19,6 +19,10 @@ class CheckResponse(BaseModel):
 
 @app.post("/check", response_model=CheckResponse)
 def check_document(payload: CheckRequest):
+    """
+    TODO: lock agent while executing query
+    """
+
     # Run the agent
     raw_result = document_checker_agent.run(payload.text)
 
