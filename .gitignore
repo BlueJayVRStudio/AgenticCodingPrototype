@@ -1,6 +1,4 @@
 .DS_Store
-# Just in case:
-.env
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -14,3 +12,6 @@ __pycache__/
 
 /my_docs/
 /vector_db/
+
+# Just in case:
+*.env
